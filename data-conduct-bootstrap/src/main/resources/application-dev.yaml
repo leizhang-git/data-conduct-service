@@ -21,3 +21,9 @@ spring:
       enabled: true
       max-file-size: 100MB
       max-request-size: 100MB
+  mvc:
+    servlet:
+      path: /
+    #swagger版本冲突
+    pathmatch:
+      matching-strategy: ant_path_matcher

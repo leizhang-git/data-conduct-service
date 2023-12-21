@@ -6,10 +6,8 @@
         <groupId>cn.lz.data</groupId>
         <artifactId>data-conduct-service</artifactId>
         <version>1.0.0-RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>data-conduct-consumer</artifactId>
-    <version>${project.version}</version>
     <name>data-conduct-consumer</name>
     <description>data-conduct-consumer</description>
 

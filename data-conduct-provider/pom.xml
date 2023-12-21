@@ -6,10 +6,9 @@
         <groupId>cn.lz.data</groupId>
         <artifactId>data-conduct-service</artifactId>
         <version>1.0.0-RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>data-conduct-provider</artifactId>
-    <version>${project.version}</version>
     <name>data-conduct-provider</name>
     <description>data-conduct-provider</description>
+    <packaging>jar</packaging>
 </project>
