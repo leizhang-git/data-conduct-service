@@ -1,2 +1,23 @@
 server:
   port: 8083
+  servlet:
+    session:
+      cookie:
+        http-only: true
+  compression:
+    # 开启压缩
+    enabled: true
+    # 开启压缩数据的最小长度
+    min-response-size: 2048
+    mime-types: text/html, text/xml, text/plain, text/css, application/javascript, application/json
+spring:
+  config:
+    activate:
+      on-profile: dev
+  application:
+    name: data-conduct-service
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
