@@ -55,6 +55,7 @@
         <cloud-gateway.version>3.1.2</cloud-gateway.version>
         <cloud-gateway.version>3.1.2</cloud-gateway.version>
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
+        <elasticsearch.version>7.6.2</elasticsearch.version>
         <thumbnailator.version>0.4.20</thumbnailator.version>
         <spring-cloud.version>2021.0.5</spring-cloud.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
@@ -70,6 +71,12 @@
 
 
     <dependencies>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-elasticsearch -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
 
         <!--zip4j依赖,解压zip压缩 -->
         <dependency>
