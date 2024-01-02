@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * @Desc
  * @Author zhanglei
  * @Date 2023/12/26 16:34
- * @Desc
  */
 @Configuration
 public class ElasticSearchConfig {
