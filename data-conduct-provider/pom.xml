@@ -11,4 +11,11 @@
     <name>data-conduct-provider</name>
     <description>data-conduct-provider</description>
     <packaging>jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>cn.lz.data</groupId>
+            <artifactId>data-conduct-consumer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
