@@ -2,7 +2,7 @@ package cn.lz.data.bootstrap;
 
 import cn.hutool.core.lang.UUID;
 import cn.lz.data.provider.domain.pojo.EsData;
-import cn.lz.data.provider.service.EsDataService;
+import cn.lz.data.provider.service.l.EsDataService;
 import cn.lz.data.provider.util.RandomUtil;
 import org.apache.commons.compress.utils.Lists;
 import org.junit.Test;

@@ -1,7 +1,11 @@
 package cn.lz.data.bootstrap;
 
+import cn.hutool.extra.spring.SpringUtil;
 import cn.lz.data.bootstrap.domain.TestUser;
+import cn.lz.data.provider.service.l.EsDataService;
+import co.elastic.clients.elasticsearch.core.DeleteByQueryResponse;
 import com.alibaba.fastjson.JSON;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -25,6 +29,8 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.MatchPhraseQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.reindex.BulkByScrollResponse;
+import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.junit.Test;
@@ -58,7 +64,7 @@ public class EsTest {
     @Test
     public void testCreateIndex() throws IOException {
         //创建索引
-        CreateIndexRequest request = new CreateIndexRequest("test_index");
+        CreateIndexRequest request = new CreateIndexRequest("es_data");
         //执行请求
         CreateIndexResponse createIndexResponse = client.indices().create(request, RequestOptions.DEFAULT);
         System.out.println(createIndexResponse);
@@ -70,6 +76,26 @@ public class EsTest {
         GetIndexRequest request = new GetIndexRequest("test_index");
         boolean exists = client.indices().exists(request, RequestOptions.DEFAULT);
         System.out.println(exists);
+    }
+
+    //测试获取条数
+    @Test
+    public void testGetCount() throws IOException {
+        // 创建一个SearchRequest对象
+        SearchRequest searchRequest = new SearchRequest("es_data");
+        // 创建一个SearchSourceBuilder对象，用于构建查询请求
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(QueryBuilders.matchAllQuery());
+        // 加上这条才会显示真实的
+        searchSourceBuilder.trackTotalHits(true);
+        searchSourceBuilder.size(0); // 设置返回的数据条数为0，只统计数据条数
+        // 将SearchSourceBuilder添加到SearchRequest中
+        searchRequest.source(searchSourceBuilder);
+        // 执行查询请求
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+        // 获取查询结果的总数
+        long totalHits = searchResponse.getHits().getTotalHits().value;
+        System.out.println(totalHits);
     }
 
     //测试删除索引
@@ -132,10 +158,18 @@ public class EsTest {
     //删除文档记录
     @Test
     public void testDeleteRequest() throws IOException {
-        DeleteRequest request = new DeleteRequest("test_index", "1");
-        request.timeout("1s");
+        DeleteRequest request = new DeleteRequest("es_data", "1");
+        request.timeout("50s");
         DeleteResponse response = client.delete(request, RequestOptions.DEFAULT);
         System.out.println(response.status());
+    }
+
+    @Test
+    public void testDeleteAllRequest() throws IOException {
+        DeleteByQueryRequest request = new DeleteByQueryRequest("es_data");
+        request.setQuery(QueryBuilders.matchAllQuery());
+        BulkByScrollResponse bulkByScrollResponse = client.deleteByQuery(request, RequestOptions.DEFAULT);
+        System.out.println("Deleted documents: " + bulkByScrollResponse.getReasonCancelled());
     }
 
     //批量插入数据
@@ -176,5 +210,14 @@ public class EsTest {
         searchRequest.source(sourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
         System.out.println(JSON.toJSONString(searchResponse.getHits()));
+    }
+
+    /**
+     * 多线程导入MySQL数据-ES
+     */
+    @Test
+    public void testImport() {
+        EsDataService esDataService = SpringUtil.getBean(EsDataService.class);
+        esDataService.importAll();
     }
 }
