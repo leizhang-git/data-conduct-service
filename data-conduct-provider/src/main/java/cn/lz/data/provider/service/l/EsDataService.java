@@ -1,5 +1,6 @@
 package cn.lz.data.provider.service.l;
 
+import cn.hutool.core.util.StrUtil;
 import cn.lz.data.provider.dao.EsDataDao;
 import cn.lz.data.provider.domain.pojo.EsData;
 import com.alibaba.fastjson.JSON;
@@ -10,13 +11,21 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -107,5 +116,28 @@ public class EsDataService extends ServiceImpl<EsDataDao, EsData> {
             //让计数-1
             cdl.countDown();
         }
+    }
+
+    public void search(String keyword) throws IOException {
+        SearchRequest request = new SearchRequest(ES_INDEX);
+        //设置查询条件
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+        //第一个条件
+        if(StrUtil.isBlank(keyword)) {
+            request.source().query(QueryBuilders.matchAllQuery());
+        }else {
+            request.source().query(QueryBuilders.queryStringQuery(keyword).field("value").defaultOperator(Operator.OR));
+        }
+        //分页
+        request.source().from(0);
+        request.source().size(20);
+        //按照时间倒叙排序
+        request.source().sort("publishTime", SortOrder.DESC);
+        //搜索
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+        //解析结果
+        SearchHits searchHits = response.getHits();
+        //获取具体文档数据
+
     }
 }
