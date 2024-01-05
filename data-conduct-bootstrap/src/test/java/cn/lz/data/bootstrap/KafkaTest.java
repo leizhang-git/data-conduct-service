@@ -31,24 +31,24 @@ import java.util.concurrent.Future;
 public class KafkaTest {
 
     public static void main(String[] args) {
-//        Properties properties = getProperties();
-//        String topicName = "test-Q";
-//        createTopic(properties, topicName);
-//        //生产一万条数据
-//        KafkaProducer<String, String> producer = getProducer(properties);
-//        for (int i = 0; i < 10000; i++) {
-//            async(producer, topicName, null, String.valueOf(i));
-//        }
-//        producer.close();
+        Properties properties = getProperties();
+        String topicName = "test-20140105";
+        createTopic(properties, topicName);
+        //生产一万条数据
+        KafkaProducer<String, String> producer = getProducer(properties);
+        for (int i = 0; i < 10000; i++) {
+            async(producer, topicName, "test-bbq", String.valueOf(i));
+        }
+        producer.close();
 
         //--------------------------------
-        Properties properties = getProperties2();
-        String topicName = "test-Q";
-        KafkaConsumer<String, String> consumer = getConsumer(properties);
-        subTopic(consumer, topicName);
-        while (true) {
-            getResult(consumer);
-        }
+//        Properties properties = getProperties2();
+//        String topicName = "test-Q";
+//        KafkaConsumer<String, String> consumer = getConsumer(properties);
+//        subTopic(consumer, topicName);
+//        while (true) {
+//            getResult(consumer);
+//        }
     }
 
     public static Properties getProperties() {
@@ -88,7 +88,7 @@ public class KafkaTest {
             if (strings.contains(topicName)) {
                 return;
             }
-            NewTopic newTopic = new NewTopic("test-Q", 3, (short) 1);
+            NewTopic newTopic = new NewTopic(topicName, 3, (short) 1);
             CreateTopicsResult result = adminClient.createTopics(Lists.newArrayList(newTopic));
             result.all().get();
         } catch (Exception e) {
@@ -133,16 +133,25 @@ public class KafkaTest {
     }
 
     public static void getResult(KafkaConsumer consumer) {
-        ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(5));
-        for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-            String topic = consumerRecord.topic();
-            //offset
-            long offset = consumerRecord.offset();
-            //key
-            String key = consumerRecord.key();
-            //value
-            String value = consumerRecord.value();
-            System.out.println("====================================================================================topic: " + topic + " offset: " + offset + " key: " + key + " value: " + value);
+        try {
+            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(5));
+            for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
+                String topic = consumerRecord.topic();
+                //offset
+                long offset = consumerRecord.offset();
+                //key
+                String key = consumerRecord.key();
+                //value
+                String value = consumerRecord.value();
+                System.out.println("====================================================================================topic: " + topic + " offset: " + offset + " key: " + key + " value: " + value);
+            }
+            consumer.commitAsync();
+        }finally {
+            try {
+                consumer.commitAsync();
+            }finally {
+                consumer.close();
+            }
         }
     }
 

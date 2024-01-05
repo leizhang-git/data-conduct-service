@@ -21,6 +21,22 @@ spring:
       enabled: true
       max-file-size: 100MB
       max-request-size: 100MB
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.25.100:8848
+        namespace: dataconduct
+      config:
+        username: nacos
+        password: nacos
+        server-addr: 192.168.25.100:8848
+        file-extension: yaml
+        namespace: dataconduct
+      server-addr: 192.168.25.100:8848
+  redis:
+    host: 192.168.25.100
+    port: 6379
+    password: a12345678
   mvc:
     servlet:
       path: /
